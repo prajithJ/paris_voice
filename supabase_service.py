@@ -18,14 +18,12 @@ def save_booking(
     customer_phone,
     appointment_time,
     service_type,
-    calendar_event_id
 ):
     data = {
         "customer_name": customer_name,
         "customer_phone": customer_phone,
         "appointment_time": appointment_time,
-        "service_type": service_type,
-        "calendar_event_id": calendar_event_id
+        "service_type": service_type
     }
 
     result = supabase.table("bookings").insert(data).execute()

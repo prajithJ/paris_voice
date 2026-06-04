@@ -11,7 +11,6 @@ class BookingRequest(BaseModel):
     customer_phone: str
     appointment_time: str
     service_type: str
-    calendar_event_id: str
 
 
 @app.get("/")
@@ -26,8 +25,7 @@ def booking_created(req: BookingRequest):
         customer_name=req.customer_name,
         customer_phone=req.customer_phone,
         appointment_time=req.appointment_time,
-        service_type=req.service_type,
-        calendar_event_id=req.calendar_event_id
+        service_type=req.service_type
     )
 
     return {
