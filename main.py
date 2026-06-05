@@ -36,3 +36,12 @@ def booking_created(req: BookingRequest):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+from fastapi import Request
+
+@app.post("/debug")
+async def debug(request: Request):
+    body = await request.json()
+    print("BODY RECEIVED:")
+    print(body)
+    return {"received": body}
