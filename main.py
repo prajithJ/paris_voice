@@ -18,14 +18,20 @@ def root():
     return {"status": "running"}
 
 
+from fastapi import Request
+
 @app.post("/booking-created")
-def booking_created(req: BookingRequest):
+async def booking_created(request: Request):
+
+    body = await request.json()
+
+    args = body["message"]["toolCalls"][0]["function"]["arguments"]
 
     save_booking(
-        customer_name=req.customer_name,
-        customer_phone=req.customer_phone,
-        appointment_time=req.appointment_time,
-        service_type=req.service_type
+        customer_name=args["customer_name"],
+        customer_phone=args["customer_phone"],
+        appointment_time=args["appointment_time"],
+        service_type=args["service_type"]
     )
 
     return {
@@ -39,9 +45,3 @@ def health():
 
 from fastapi import Request
 
-@app.post("/debug")
-async def debug(request: Request):
-    body = await request.json()
-    print("BODY RECEIVED:")
-    print(body)
-    return {"received": body}
