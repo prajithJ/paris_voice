@@ -18,14 +18,20 @@ def root():
     return {"status": "running"}
 
 
-from fastapi import Request
+from fastapi import FastAPI, Request
 
 @app.post("/booking-created")
 async def booking_created(request: Request):
 
     body = await request.json()
 
+    print("BODY RECEIVED")
+    print(body)
+
     args = body["message"]["toolCalls"][0]["function"]["arguments"]
+
+    print("ARGS")
+    print(args)
 
     save_booking(
         customer_name=args["customer_name"],
@@ -33,6 +39,8 @@ async def booking_created(request: Request):
         appointment_time=args["appointment_time"],
         service_type=args["service_type"]
     )
+
+    print("BOOKING SAVED")
 
     return {
         "success": True,
