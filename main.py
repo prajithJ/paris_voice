@@ -45,7 +45,12 @@ async def booking_created(request: Request):
     print("ASSISTANT ID")
     print(assistant_id)
 
-    client_id = get_client_id_for_assistant(assistant_id)
+    try:
+        client_id = get_client_id_for_assistant(assistant_id)
+    except Exception as e:
+        print("ERROR: client lookup failed, falling back to DEFAULT_CLIENT_ID")
+        print(e)
+        client_id = None
 
     if client_id is None:
         print("WARNING: no client matched for assistant_id — falling back to DEFAULT_CLIENT_ID")
