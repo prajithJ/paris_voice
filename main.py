@@ -73,3 +73,14 @@ async def booking_created(request: Request):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.post("/call-ended")
+async def call_ended(request: Request):
+
+    body = await request.json()
+
+    print("CALL ENDED BODY RECEIVED")
+    print(body)
+
+    return {"received": True}
