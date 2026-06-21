@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 
-from supabase_service import save_booking
+from supabase_service import save_booking, get_client_id_for_assistant
 
 app = FastAPI()
 
@@ -18,8 +18,6 @@ def root():
     return {"status": "running"}
 
 
-from fastapi import FastAPI, Request
-
 @app.post("/booking-created")
 async def booking_created(request: Request):
 
@@ -28,16 +26,36 @@ async def booking_created(request: Request):
     print("BODY RECEIVED")
     print(body)
 
-    args = body["message"]["toolCalls"][0]["function"]["arguments"]
+    message = body["message"]
+
+    args = message["toolCalls"][0]["function"]["arguments"]
 
     print("ARGS")
     print(args)
+
+    # Figure out which client this call belongs to, based on which
+    # Vapi assistant handled it. Check a couple of likely payload
+    # locations since we haven't confirmed the exact field yet.
+    assistant_id = None
+    if message.get("assistant"):
+        assistant_id = message["assistant"].get("id")
+    if not assistant_id and message.get("call"):
+        assistant_id = message["call"].get("assistantId")
+
+    print("ASSISTANT ID")
+    print(assistant_id)
+
+    client_id = get_client_id_for_assistant(assistant_id)
+
+    if client_id is None:
+        print("WARNING: no client matched for assistant_id — falling back to DEFAULT_CLIENT_ID")
 
     save_booking(
         customer_name=args["customer_name"],
         customer_phone=args["customer_phone"],
         appointment_time=args["appointment_time"],
-        service_type=args["service_type"]
+        service_type=args["service_type"],
+        client_id=client_id
     )
 
     print("BOOKING SAVED")
@@ -50,6 +68,3 @@ async def booking_created(request: Request):
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
-from fastapi import Request
-
